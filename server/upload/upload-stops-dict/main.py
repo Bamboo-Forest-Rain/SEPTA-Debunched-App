@@ -17,9 +17,10 @@ script_dir = dirname(__file__)
 server_dir = dirname(dirname(script_dir))
 
 client = storage.Client()
-bucket = client.bucket("musa-509-stop-dictionary")
-info_blob = bucket.blob("stop-info.json")
-next_stops_blob = bucket.blob("next-stops.json")
+bucket = client.bucket("musa-509-bunching-prediction")
+folder = "stop-info/"
+info_blob = bucket.blob(folder + "stop-info.json")
+next_stops_blob = bucket.blob(folder + "next-stops.json")
 
 runtime = pd.read_parquet(f"{server_dir}/raw-data/runtimeDf.gzip")
 
@@ -28,43 +29,49 @@ stop_info = (
     runtime.query("routeId.isin(@routes)")
     .copy()
     .groupby(["routeId", "directionId", "toStopId"])
-    .agg({"toStopPathIndex": "min", "DoW": "size"})
+    .agg({"toStopSequence": "min", "DoW": "size"})
     .query("DoW > 0")
     .copy()
     .reset_index()
     .drop(["DoW"], axis=1)
 )
 
-stops = gpd.read_file(f"{server_dir}/data/stops/stopsGeographyProcessed.shp")
-stops = stops.rename(columns={"directionI": "directionId", "StopId": "stopId"}).drop(
-    "geography", axis=1
-)
+# stops = gpd.read_file(f"{server_dir}/data/stops/stopsGeographyProcessed.shp")
+# stops = stops.rename(columns={"directionI": "directionId", "StopId": "stopId"}).drop(
+#     "geography", axis=1
+# )
 
-stops.routeId = stops.routeId.astype(str)
-stops.directionId = stops.directionId.astype(str)
-stops.stopId = stops.stopId.astype(str)
+# stops.routeId = stops.routeId.astype(str)
+# stops.directionId = stops.directionId.astype(str)
+# stops.stopId = stops.stopId.astype(str)
 
-stops = stops.drop_duplicates(subset=["routeId", "directionId", "stopId"])
-# Info by Stop
+# stops = stops.drop_duplicates(subset=["routeId", "directionId", "stopId"])
+# # Info by Stop
+# stop_info = stop_info.merge(
+#     stops[["routeId", "directionId", "stopId", "centerCity"]].rename(
+#         columns={"stopId": "toStopId"}
+#     ),
+#     how="left",
+#     on=["routeId", "directionId", "toStopId"],
+# )
+
+stop_level = pd.read_parquet(f"{server_dir}/raw-data/stop_level_var.gzip")
+
 stop_info = stop_info.merge(
-    stops[["routeId", "directionId", "stopId", "centerCity"]].rename(
-        columns={"stopId": "toStopId"}
-    ),
-    how="left",
-    on=["routeId", "directionId", "toStopId"],
-)
+    stop_level, how="left", on=["routeId", "directionId", "toStopId"])
+
+stop_info = stop_info.drop_duplicates(subset=["routeId", "directionId", "toStopId"])
 
 stop_info["stop_unique_id"] = (
     stop_info["routeId"] + "_" + stop_info["directionId"] + "_" + stop_info["toStopId"]
 )
-
 
 # Next 1-20 stops by stop
 sorted = stop_info.sort_values(
     [
         "routeId",
         "directionId",
-        "toStopPathIndex",
+        "toStopSequence",
     ]
 )
 
@@ -75,11 +82,21 @@ for i in range(1, 22):
 
 next_stops = sorted.drop(
     [
-        "toStopPathIndex",
+        "toStopSequence",
         "routeId",
         "directionId",
         "toStopId",
-        "centerCity",
+        'sumRiders_10', 
+        'sumRiders_20', 
+        'sumComm_10',
+        'sumComm_20', 
+        'pctSignal_10', 
+        'pctSignal_20',
+        'pop',
+        'popDen', 
+        'riders', 
+        'commuter', 
+        'comm_count'
     ],
     axis=1,
 )
@@ -88,9 +105,18 @@ stop_info = stop_info.drop(["routeId", "directionId", "toStopId"], axis=1)
 stop_info = stop_info.convert_dtypes()
 
 stop_info_dict = stop_info.set_index("stop_unique_id")[
-    [
-        "toStopPathIndex",
-        "centerCity",
+    [   'toStopSequence',
+        'sumRiders_10', 
+        'sumRiders_20', 
+        'sumComm_10', 
+        'sumComm_20', 
+        'pctSignal_10', 
+        'pctSignal_20', 
+        'pop',
+        'popDen', 
+        'riders', 
+        'commuter', 
+        'comm_count' 
     ]
 ].to_dict(orient="index")
 

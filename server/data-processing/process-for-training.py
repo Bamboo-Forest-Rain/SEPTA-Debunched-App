@@ -147,7 +147,7 @@ def readAndProcessData(path):
 # This is a local path.
 # The dataset is not open to the public
 
-boxPath = "C:/Users/leeje/Box/Practicum_Otis_Bus/raw-data"
+boxPath = "C:/Users/huyh/Box/Practicum_Otis_Bus/raw-data"
 runtime1 = readAndProcessData(f"{boxPath}/oct_2022_weekday_runtimes.csv")
 runtime2 = readAndProcessData(f"{boxPath}/oct_16_31_weekday_runtimes.csv")
 
