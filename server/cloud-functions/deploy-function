@@ -3,10 +3,11 @@
 gcloud functions deploy cache-transit-view `
 --runtime nodejs18 `
 --trigger-http `
---source . `
+--source .\server\cloud-functions\cache-transit-view\ `
 --region us-east1 `
 --entry-point cacheTransitView `
---service-account data-pipeline-user@septa-bunching-prediction.iam.gserviceaccount.com `
+--project musa-cloud-computing `
+--service-account data-pipeline-user@musa-cloud-computing.iam.gserviceaccount.com `
 
 # Add role to service account
 
@@ -14,4 +15,4 @@ gcloud projects add-iam-policy-binding septa-bunching-prediction --member=servic
 
 # Scheduler deploy
 
-gcloud scheduler jobs create http cache-transit-view-scheduler --schedule "* 7-19 * * 1-5" --uri https://us-east1-septa-bunching-prediction.cloudfunctions.net/cache-transit-view --http-method POST --oidc-service-account-email data-pipeline-user@septa-bunching-prediction.iam.gserviceaccount.com  --location us-east1
+gcloud scheduler jobs create http cache-transit-view-scheduler --schedule "* 7-19 * * 1-5" --uri https://us-east1-musa-cloud-computing.cloudfunctions.net/cache-transit-view --http-method POST --oidc-service-account-email data-pipeline-user@musa-cloud-computing.iam.gserviceaccount.com  --location us-east1 --project musa-cloud-computing
