@@ -8,8 +8,10 @@ import pytz
 import pandas as pd
 from flask import make_response
 import functions_framework
+import os
 
 dotenv.load_dotenv()
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:/Users/huyh/Documents/Penn/Spring 2023/Cloud Computing/cloud-computing-bus-bunching/server/musa-cloud-computing-94ed5397a0cb.json"
 
 directionDict = {
     "21": {"0": "EastBound", "1": "WestBound"},
@@ -100,9 +102,10 @@ def make_predictions(route, direction, trip_id):
     threshold = 0.015
     # Get dictionaries
     try:
-        stop_dict = load_json_from_gcs("stop-dictionary", "stop-info.json")
-        next_stops_dict = load_json_from_gcs("stop-dictionary", "next-stops.json")
-        trip_dict = load_json_from_gcs("trip-dictionary", "trip-start-times.json")
+        stop_dict = load_json_from_gcs("musa-509-bunching-prediction", "stop-info/stop-info.json")
+        next_stops_dict = load_json_from_gcs("musa-509-bunching-prediction", "stop-info/next-stops.json")
+        trip_dict = load_json_from_gcs("musa-509-bunching-prediction", "trip-info/trip-start-times.json")
+
     except:
         print("Failed to get stop dictionaries")
         return
@@ -110,7 +113,7 @@ def make_predictions(route, direction, trip_id):
     # Get this bus
     try:
         this_bus = load_json_from_gcs(
-            "transit-view-cache",
+            "transit-view-cache-musa-509",
             f"{route}/{directionDict[route][direction]}/{trip_id}.json",
         )
     except:
@@ -127,7 +130,7 @@ def make_predictions(route, direction, trip_id):
     # Get previous bus (if available)
     try:
         prev_bus = load_json_from_gcs(
-            "transit-view-cache",
+            "transit-view-cache-musa-509",
             f"{route}/{directionDict[route][direction]}/{prev_trip_id}.json",
         )
     except:
@@ -148,7 +151,7 @@ def make_predictions(route, direction, trip_id):
 
     try:
         prev_prev_bus = load_json_from_gcs(
-            "transit-view-cache",
+            "transit-view-cache-musa-509",
             f"{route}/{directionDict[route][direction]}/{prev_prev_trip_id}.json",
         )
     except:
@@ -175,8 +178,11 @@ def make_predictions(route, direction, trip_id):
         prevBus_lag_headway = calculate_headway(
             prev_bus, prev_prev_bus, is_latest=False
         )
+        print("headway calculated success1")
 
         predictors["headwayLagDiff"] = predictors["headway"] - lag_headway
+        print("headway calculated success2")
+
         predictors["prevBus_headwayLagDiff"] = (
             predictors["prevBus_headway"] - prevBus_lag_headway
         )
@@ -185,7 +191,7 @@ def make_predictions(route, direction, trip_id):
     except:
         print("Failed to calculate headway")
         return
-
+    
     # Calculate speeds
     try:
         predictors["speed"] = calculate_speed(route, direction, stop_dict, this_bus)
@@ -232,7 +238,6 @@ def make_predictions(route, direction, trip_id):
         print("Failed to calculate lateness")
         return
 
-    predictors["directionId"] = direction
     predictors["period"] = datetime.now().hour
 
     # Add other variables based on steps
@@ -244,13 +249,23 @@ def make_predictions(route, direction, trip_id):
             future_stop_id = next_stops_dict[f"{route}_{direction}_{this_stop}"][
                 f"next_{steps}_unique_id"
             ]
-            predictors["centerCity"] = stop_dict[future_stop_id]["centerCity"]
-            predictors["toStopPathIndex"] = stop_dict[future_stop_id]["toStopPathIndex"]
+            predictors["toStopSequence"] = stop_dict[future_stop_id]["toStopSequence"]
+            predictors['sumRiders_10'] = stop_dict[future_stop_id]["sumRiders_10"]
+            predictors['sumRiders_20'] = stop_dict[future_stop_id]["sumRiders_20"]
+            predictors['sumComm_10'] = stop_dict[future_stop_id]["sumComm_10"]
+            predictors['sumComm_20'] = stop_dict[future_stop_id]["sumComm_20"]
+            predictors['pctSignal_10'] = stop_dict[future_stop_id]["pctSignal_10"]
+            predictors['pctSignal_20'] = stop_dict[future_stop_id]["pctSignal_20"]
+            predictors['pop'] = stop_dict[future_stop_id]["pop"]
+            predictors['popDen'] = stop_dict[future_stop_id]["popDen"]
+            predictors['riders'] = stop_dict[future_stop_id]["riders"]
+            predictors['commuter'] = stop_dict[future_stop_id]["commuter"]
+            predictors['comm_count'] = stop_dict[future_stop_id]["comm_count"]
 
             print(json.dumps(predictors, indent=4))
 
             model = load_joblib_from_gcs(
-                "bunching-prediction-models", f"{route}/{steps}.joblib"
+                "musa-509-bunching-prediction", f"musa-509-bunching-prediction-model/{route}/{steps}.joblib"
             )
             predictors_df = pd.DataFrame(predictors, index=[0])
             score = model.predict_proba(predictors_df)[0][1]
@@ -264,4 +279,5 @@ def make_predictions(route, direction, trip_id):
     print(scores)
 
 
-make_predictions("47", "0", "213576")
+make_predictions("47", "1", "214243")
+

@@ -7,11 +7,12 @@ gcloud functions deploy cache-transit-view `
 --region us-east1 `
 --entry-point cacheTransitView `
 --project musa-cloud-computing `
+--allow-unauthenticated `
 --service-account data-pipeline-user@musa-cloud-computing.iam.gserviceaccount.com `
 
 # Add role to service account
 
-gcloud projects add-iam-policy-binding septa-bunching-prediction --member=serviceAccount:data-pipeline-user@septa-bunching-prediction.iam.gserviceaccount.com --role=roles/cloudfunctions.invoker
+gcloud projects add-iam-policy-binding musa-cloud-computing --member=serviceAccount:data-pipeline-user@musa-cloud-computing.iam.gserviceaccount.com --role=roles/storage.object.list
 
 # Scheduler deploy
 

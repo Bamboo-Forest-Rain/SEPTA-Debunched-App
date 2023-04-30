@@ -1,0 +1,9 @@
+gcloud functions deploy trigger_10_sconds `
+--runtime python310 `
+--trigger-http `
+--source .\server\cloud-functions\trigger-function\ `
+--region us-east1 `
+--entry-point trigger_function `
+--project musa-cloud-computing `
+--allow-unauthenticated `
+--service-account data-pipeline-user@musa-cloud-computing.iam.gserviceaccount.com `

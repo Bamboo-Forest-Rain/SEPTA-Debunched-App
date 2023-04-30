@@ -4,6 +4,7 @@ import dotenv
 import json
 from os.path import dirname
 from google.cloud import storage
+from sklearn.preprocessing import StandardScaler
 
 dotenv.load_dotenv()
 
@@ -61,6 +62,10 @@ stop_info = stop_info.merge(
     stop_level, how="left", on=["routeId", "directionId", "toStopId"])
 
 stop_info = stop_info.drop_duplicates(subset=["routeId", "directionId", "toStopId"])
+
+cols_to_scale = ['toStopSequence', 'sumRiders_10', 'sumRiders_20', 'sumComm_10', 'sumComm_20', 'pctSignal_10', 'pctSignal_20', 'pop','popDen', 'riders', 'commuter', 'comm_count' ]
+scaler = StandardScaler()
+stop_info[cols_to_scale] = scaler.fit_transform(stop_info[cols_to_scale])
 
 stop_info["stop_unique_id"] = (
     stop_info["routeId"] + "_" + stop_info["directionId"] + "_" + stop_info["toStopId"]
