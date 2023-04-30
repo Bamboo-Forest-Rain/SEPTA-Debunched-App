@@ -1,0 +1,22 @@
+@import "../../styles/responsive";
+@import "../../styles/colors";
+@import "../../styles/dimensions";
+
+.container {
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+  border-radius: $border-radius-big;
+}
+
+.outContainer {
+  height: 100%;
+  width: calc(100% - #{$panel-width});
+  @include respond-to("tablet") {
+    width: 100%;
+  }
+  z-index: 0;
+  overflow: hidden;
+  border-radius: $border-radius-big;
+  box-shadow: $box-shadow;
+}

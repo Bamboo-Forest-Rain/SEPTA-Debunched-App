@@ -1,0 +1,153 @@
+@import "../../styles/responsive";
+@import "../../styles/colors";
+@import "../../styles/dimensions";
+
+nav {
+  position: relative;
+  height: $nav-height;
+  width: 100%;
+  gap: $nav-gap;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  @include respond-to("mobile") {
+    height: $small-nav-height;
+  }
+  z-index: 2;
+}
+
+.logo {
+  height: 100%;
+  padding: $nav-gap 0 0 $nav-gap;
+}
+
+.bar {
+  height: 100%;
+  background-color: $primary;
+  width: calc(100% - 2 * #{$nav-gap});
+  border-radius: 0 0 $border-radius-big $border-radius-big;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+}
+
+.appName {
+  color: white;
+  font-weight: 600;
+  font-size: 2em;
+  padding: 0.5em;
+  margin: 0;
+  @include respond-to("tablet") {
+    font-size: 1.2em;
+  }
+}
+
+.headerPicture {
+  height: calc(#{$nav-height} / 2);
+  @include respond-to("tablet") {
+    height: calc(#{$nav-height} / 2.5);
+  }
+  @include respond-to("mobile") {
+    display: none;
+  }
+}
+
+.infoIcon {
+  color: white;
+  padding: 1em;
+  @include respond-to("mobile") {
+    padding: 0.5em;
+    margin-left: auto;
+  }
+  cursor: pointer;
+}
+
+.wideModal {
+  width: 90%;
+  height: 90%;
+  @include respond-to("tablet") {
+    width: 100%;
+    margin-left: 0;
+  }
+  @include respond-to("mobile") {
+    width: 100%;
+    margin-left: 0;
+  }
+  max-width: 100%;
+}
+
+.modalTitleBar {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  @include respond-to("mobile") {
+    flex-direction: column;
+    gap: 10px;
+  }
+  @include respond-to("tablet") {
+    flex-direction: column;
+    gap: 10px;
+  }
+  align-items: baseline;
+}
+
+.authors {
+  font-size: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  @include respond-to("mobile") {
+    flex-direction: column;
+    gap: 0;
+    font-size: 0.9rem;
+  }
+  @include respond-to("tablet") {
+    font-size: 0.9rem;
+  }
+  font-weight: 500;
+}
+
+.author {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.modalQuote {
+  font-style: italic;
+  padding-left: 2em;
+  border-left: 3px solid $secondary;
+  font-family: caveat;
+  font-size: 2em;
+}
+
+.modalTitle {
+  color: $danger;
+}
+
+.modePlates {
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-weight: 700;
+  background-color: $danger;
+  color: white;
+}
+
+.modePlatesDemo {
+  background-color: $danger;
+  color: white;
+}
+
+.modePlatesRealtime {
+  background-color: $light;
+  color: $primary;
+}
+
+.modalText {
+  font-size: 0.9rem;
+}
+
+.caveatIcon {
+  color: $danger;
+}

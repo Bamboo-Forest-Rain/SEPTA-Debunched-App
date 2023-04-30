@@ -1,0 +1,8 @@
+@import "../../styles/colors";
+.leaflet-div-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border-color: $primary;
+}

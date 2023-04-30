@@ -1,0 +1,264 @@
+@import "../../styles/responsive";
+@import "../../styles/colors";
+@import "../../styles/dimensions";
+
+.container {
+  height: 100%;
+  width: $panel-width;
+  @include respond-to("tablet") {
+    width: 100%;
+  }
+  z-index: 1;
+  overflow: hidden;
+  background-color: white;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: $main-gap;
+  overflow: auto;
+}
+
+.module {
+  padding: $panel-padding $panel-padding-large;
+  border-radius: $border-radius-big;
+  box-shadow: $box-shadow;
+  display: flex;
+  flex-direction: column;
+  gap: $panel-gap;
+}
+
+.busSelectorModule {
+  min-height: 100px;
+  max-height: 150px;
+  overflow: auto;
+}
+
+.resultModule {
+  min-height: 100px;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.moduleTitle {
+  color: $primary;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 $panel-padding;
+}
+
+.moduleTitleHeavy {
+  font-weight: 700;
+  color: $danger;
+}
+
+.moduleTitle h5 {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: $nav-gap;
+  justify-content: center;
+}
+
+.infoIcon {
+  color: $primary;
+  padding: 1em;
+  padding: 0;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+}
+
+.directionDisplayer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.directionDisplayerStop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 38%;
+  gap: $nav-gap;
+}
+
+$stop-tag-height: 35px;
+
+.directionDisplayerStopAbbr {
+  width: 100%;
+  height: $stop-tag-height;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 1.5px solid $primary;
+  border-radius: 8px;
+  color: $primary;
+  font-weight: 800;
+}
+
+.directionDisplayerStopName {
+  width: 100%;
+  font-size: 0.7rem;
+  color: #aaa;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+$arrow-height: 24px;
+$arrow-width: 2px;
+$arrow-head-height: 12px;
+$switch-width: 25px;
+
+.arrowContainer {
+  position: relative;
+  flex-grow: 1;
+  height: $arrow-height;
+}
+
+.arrowBody {
+  position: absolute;
+  top: calc(#{$stop-tag-height} / 2 - #{$arrow-width / 2});
+  left: 0;
+  right: 0;
+  height: $arrow-width;
+  background: $secondary;
+}
+
+.arrowHead {
+  position: absolute;
+  right: 0;
+  top: calc(#{$stop-tag-height} / 2 - #{$arrow-head-height / 2});
+  width: $arrow-head-height;
+  height: $arrow-head-height;
+  background: $secondary;
+  clip-path: polygon(100% 50%, 0% 100%, 0% 0%);
+  display: flex;
+  align-items: center;
+}
+
+.switchIconContainer {
+  cursor: pointer;
+  width: $switch-width;
+  height: $switch-width;
+  position: absolute;
+  top: calc(#{$stop-tag-height} / 2 - #{$switch-width / 2});
+  left: calc(50% - #{$switch-width / 2});
+  border-radius: 50%;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.switchIcon {
+  width: 20px;
+  height: 20px;
+  color: white;
+  cursor: pointer;
+  z-index: 4;
+}
+
+.dateTimeDisplayer {
+  display: flex;
+  gap: $main-gap;
+  justify-content: space-between;
+}
+
+.timeDisplayer {
+  color: $primary;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.dateDisplayer {
+  color: $primary;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.dateTimeWithIcon {
+  display: flex;
+  justify-content: space-between;
+}
+
+.goodTimeWarning {
+  color: $danger;
+  font-size: 0.8rem;
+}
+
+.getPredictionButton {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.tripList {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+}
+
+.tripListItem {
+  display: flex;
+  gap: $nav-gap;
+  padding: $nav-gap;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tripButton {
+  font-size: 0.8rem;
+  width: 80px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+}
+
+.tripListNear {
+  font-style: italic;
+}
+
+.tripListStopName {
+  font-weight: 600;
+}
+
+.nextButton {
+  width: 3.5rem;
+  height: 20px;
+  color: white;
+}
+
+.nextButton:hover {
+  color: white;
+}
+
+.resultButton {
+  margin-left: auto;
+  width: 3.5rem;
+  height: 20px;
+  color: white;
+}
+
+.resultButton:hover {
+  color: white;
+}
+
+.demoModeSetter * {
+  font-weight: 700;
+  color: $primary;
+}
+
+.demoModeSetter *:hover {
+  color: $primary;
+}
