@@ -1,4 +1,4 @@
-*This is a copy of Jie's repo on our project "SEPTA Debunched". Based on [Jie's code](https://github.com/Leejere/debunch-septa-app), I made slight improvements on the model that are in accordance with our markdown* 
+*This is a copy of Jie's repo on our project "SEPTA Debunched". Based on [his's repo](https://github.com/Leejere/debunch-septa-app), I made slight improvements on the model that are in accordance with our markdown* 
 
 # SEPTA, Debunched
 
