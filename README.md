@@ -30,3 +30,5 @@ The `main` branch of this repo contains:
 - Scripts for data processing and source files for Google Cloud Functions.
 
 The `gh-pages` branch contains the built files for the app's deployment.
+
+To test the webpage, type 'npm start' in the terminal.
