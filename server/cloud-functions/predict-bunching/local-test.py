@@ -11,7 +11,7 @@ import functions_framework
 import os
 
 dotenv.load_dotenv()
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:/Users/huyh/Documents/Penn/Spring 2023/Cloud Computing/cloud-computing-bus-bunching/server/musa-cloud-computing-94ed5397a0cb.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:/Users/huyh/Documents/Penn/Spring 2023/Cloud Computing/cloud-computing-bus-bunching/server/musa-cloud-computing-da8ce483d074.json"
 
 directionDict = {
     "21": {"0": "EastBound", "1": "WestBound"},
