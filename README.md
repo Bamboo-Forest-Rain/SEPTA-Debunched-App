@@ -1,4 +1,4 @@
-*This is a copy of Jie's repo on our project "SEPTA Debunched". Based on [his's repo](https://github.com/Leejere/debunch-septa-app), I made slight improvements on the model that are in accordance with our markdown* 
+*Credits to [Jie Li](https://github.com/Leejere) for developing the front end and much of the initial google cloud funtions.*
 
 # SEPTA, Debunched
 

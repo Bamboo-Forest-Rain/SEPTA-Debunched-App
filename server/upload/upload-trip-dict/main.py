@@ -53,3 +53,5 @@ trip_info_blob.upload_from_string(
 trip_start_times_blob.upload_from_string(
     json.dumps(trip_start_times_dict), content_type="application/json"
 )
+
+print("success")

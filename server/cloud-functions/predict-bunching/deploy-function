@@ -1,0 +1,12 @@
+gcloud functions deploy predict-bunching `
+--runtime python311 `
+--trigger-http `
+--source .\server\cloud-functions\predict-bunching\ `
+--region us-east1 `
+--entry-point make_predictions `
+--project musa-cloud-computing `
+--allow-unauthenticated `
+--memory=512MB `
+--service-account data-pipeline-user@musa-cloud-computing.iam.gserviceaccount.com `
+
+gcloud scheduler jobs create http delete-cache-daily --schedule "0 1 * * 1-5" --uri https://us-east1-septa-bunching-prediction.cloudfunctions.net/delete-cache --http-method POST --oidc-service-account-email data-pipeline-user@septa-bunching-prediction.iam.gserviceaccount.com  --location us-east1 --time-zone "America/New_York"

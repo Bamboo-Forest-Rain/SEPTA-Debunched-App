@@ -1,3 +1,5 @@
 deploy-function
 .gcloudignore
 local-test.py
+test1.py
+archive/

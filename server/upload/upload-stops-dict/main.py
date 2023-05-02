@@ -7,6 +7,7 @@ from google.cloud import storage
 from sklearn.preprocessing import StandardScaler
 
 dotenv.load_dotenv()
+scaler = StandardScaler()
 
 """
 This script uploads two dictionary to Google Cloud Storage:
@@ -30,7 +31,10 @@ stop_info = (
     runtime.query("routeId.isin(@routes)")
     .copy()
     .groupby(["routeId", "directionId", "toStopId"])
-    .agg({"toStopSequence": "min", "DoW": "size"})
+    .agg({ "toStopSequence": "min",
+            "stopPathLength": "mean",
+            "expectedCumRuntimeSeconds": "mean", 
+            "DoW": "size"})
     .query("DoW > 0")
     .copy()
     .reset_index()
@@ -63,8 +67,11 @@ stop_info = stop_info.merge(
 
 stop_info = stop_info.drop_duplicates(subset=["routeId", "directionId", "toStopId"])
 
-cols_to_scale = ['toStopSequence', 'sumRiders_10', 'sumRiders_20', 'sumComm_10', 'sumComm_20', 'pctSignal_10', 'pctSignal_20', 'pop','popDen', 'riders', 'commuter', 'comm_count' ]
-scaler = StandardScaler()
+cols_to_scale = ["toStopSequence", 'sumRiders_10', 
+                 'sumRiders_20', 'sumComm_10', 'sumComm_20', 
+                'pctSignal_10', 'pctSignal_20', 'pop','popDen',
+                'riders', 'commuter', 'comm_count']
+
 stop_info[cols_to_scale] = scaler.fit_transform(stop_info[cols_to_scale])
 
 stop_info["stop_unique_id"] = (
@@ -86,7 +93,8 @@ for i in range(1, 22):
     ].shift(-i)
 
 next_stops = sorted.drop(
-    [
+    [   "stopPathLength",
+        "expectedCumRuntimeSeconds",
         "toStopSequence",
         "routeId",
         "directionId",
@@ -110,18 +118,20 @@ stop_info = stop_info.drop(["routeId", "directionId", "toStopId"], axis=1)
 stop_info = stop_info.convert_dtypes()
 
 stop_info_dict = stop_info.set_index("stop_unique_id")[
-    [   'toStopSequence',
-        'sumRiders_10', 
-        'sumRiders_20', 
-        'sumComm_10', 
-        'sumComm_20', 
-        'pctSignal_10', 
-        'pctSignal_20', 
+    [   "stopPathLength",
+        "expectedCumRuntimeSeconds",
+        'toStopSequence',
+        'sumRiders_10',
+        'sumRiders_20',
+        'sumComm_10',
+        'sumComm_20',
+        'pctSignal_10',
+        'pctSignal_20',
         'pop',
-        'popDen', 
-        'riders', 
-        'commuter', 
-        'comm_count' 
+        'popDen',
+        'riders',
+        'commuter',
+        'comm_count'
     ]
 ].to_dict(orient="index")
 

@@ -4,9 +4,7 @@ from os.path import dirname
 import warnings
 import geopandas as gpd
 
-#from sklearn.ensemble import RandomForestClassifier
-
-from xgboost import XGBClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 # Pipelines
 from sklearn.pipeline import make_pipeline
@@ -20,7 +18,7 @@ from joblib import dump
 
 warnings.filterwarnings("ignore")
 
-is_for_deploy = True
+is_for_deploy = False
 
 script_dir = dirname(__file__)
 server_dir = dirname(script_dir)
@@ -108,28 +106,28 @@ for lagSteps in range(1, 21):
             - runtimeDf[f"prevBus_{var}Lag{lagSteps+1}"]
         )
 
+# stops = gpd.read_file(f"{server_dir}/raw-data/stops/stopsGeographyProcessed.shp")
+# stops = stops.rename(columns={"directionI": "directionId", "StopId": "stopId"}).drop(
+#     "geography", axis=1
+# )
 
-stop_level = pd.read_csv("C:/Users/huyh/Documents/Penn/Spring 2023/Cloud Computing/cloud-computing-bus-bunching/server/raw-data/stops_spatial_lag.csv", 
-                         index_col=False)
-stop_level = stop_level.drop('toStopSequence',  axis = 1)
-stop_level.routeId = stop_level.routeId.astype(str)
-stop_level.directionId = stop_level.directionId.astype(str).apply(lambda x: x.split('.')[0])
-stop_level.toStopId = stop_level.toStopId.astype(str)
+# stops.routeId = stops.routeId.astype(str)
+# stops.directionId = stops.directionId.astype(str)
+# stops.stopId = stops.stopId.astype(str)
 
-runtimeDf = runtimeDf.merge(stop_level, how = "left", on = ['routeId', 'directionId', 'toStopId'])
+# stops = stops.drop_duplicates(subset=["routeId", "directionId", "stopId"])
 
-fill_na_col = ['sumRiders_10', 'sumRiders_20', 'sumComm_10', 'sumComm_20', 'pctSignal_10', 'pctSignal_20', 'pop','popDen', 'riders', 'commuter', 'comm_count' ]
-mean = runtimeDf[fill_na_col].mean()
-runtimeDf[fill_na_col] = runtimeDf[fill_na_col].fillna(mean)
+# runtimeDf = runtimeDf.merge(
+#     stops[["routeId", "directionId", "stopId", "centerCity"]],
+#     how="left",
+#     left_on=["routeId", "directionId", "toStopId"],
+#     right_on=["routeId", "directionId", "stopId"],
+# )
 
-runtimeDf.period = runtimeDf.period.astype(int)
 
-numBasePredictors = ["toStopSequence", 'sumRiders_10', 
-                     'sumRiders_20', 'sumComm_10', 'sumComm_20', 
-                     'pctSignal_10', 'pctSignal_20', 'pop','popDen',
-                     'riders', 'commuter', 'comm_count']
 
-nonTransPredictors = ["period"]
+numBasePredictors = ["toStopSequence"]
+catPredictors = ["directionId", "period", "centerCity"]
 
 lagPredictors = ["speed", "headway", "late"]
 lagDiffPredictors = [f"{var}LagDiff" for var in ["speed", "headway", "late"]]
@@ -139,16 +137,16 @@ preBusPredictors = [f"prevBus_{var}" for var in lagPredictors]
 allLagPredictors = lagPredictors + preBusPredictors
 
 
-def makeClassifierPipe(numPredictors, nonTransPredictors, nEstimators, maxDepth):
+def makeClassifierPipe(numPredictors, catPredictors, nEstimators, maxDepth):
     transformer = ColumnTransformer(
         transformers=[
             ("num", StandardScaler(), numPredictors),
-            ("ignore", "passthrough", nonTransPredictors)
+            ("cat", OneHotEncoder(handle_unknown="ignore"), catPredictors),
         ]
     )
     pipe = make_pipeline(
         transformer,
-        XGBClassifier(
+        RandomForestClassifier(
             n_estimators=nEstimators, max_depth=maxDepth, random_state=42
         ),
     )
@@ -159,9 +157,9 @@ def trainClassifier(trainSet, targetTrain):
     numPredictors = numBasePredictors + allLagPredictors
     classifier = makeClassifierPipe(
         numPredictors=numPredictors,
-        nonTransPredictors=nonTransPredictors,
+        catPredictors=catPredictors,
         nEstimators=100,
-        maxDepth=22,
+        maxDepth=20,
     )
 
     classifier.fit(trainSet, targetTrain)
@@ -184,7 +182,7 @@ def predictForRoute(runtimeDf, route, steps):
     sel = (
         sel[
             numBasePredictors
-            + nonTransPredictors
+            + catPredictors
             + lagPredictors
             + preBusPredictors
             + ["initBunching", "serviceDate"]
@@ -195,7 +193,7 @@ def predictForRoute(runtimeDf, route, steps):
 
     sel.columns = (
         numBasePredictors
-        + nonTransPredictors
+        + catPredictors
         + allLagPredictors
         + ["initBunching", "serviceDate"]
     )

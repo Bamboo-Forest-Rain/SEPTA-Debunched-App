@@ -57,7 +57,7 @@ export default function Panel({
     setShowResults(false);
     setFallbackMessage("Fetching prediction...");
     const urlRoot =
-      "https://us-east1-septa-bunching-prediction.cloudfunctions.net/make-predictions?";
+      "https://us-east1-musa-cloud-computing.cloudfunctions.net/predict-bunching?";
     setShowResults(false);
     const url = `${urlRoot}route=${requestParams.route}&direction=${requestParams.direction}&trip=${requestParams.trip}`;
 
