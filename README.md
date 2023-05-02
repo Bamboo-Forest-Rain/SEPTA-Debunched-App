@@ -34,4 +34,3 @@ The `main` branch of this repo contains:
 - Source files for the app's website.
 - Scripts for data processing and source files for Google Cloud Functions.
 
-To test the webpage, type 'npm start' in the terminal.
