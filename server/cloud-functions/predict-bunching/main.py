@@ -290,6 +290,8 @@ def make_predictions(request):
             predictors["prevBus_lateLagDiff"] = (
                 predictors["prevBus_late"] - prevBus_lag_late
             )
+            
+            print(json.dumps(predictors, indent=4))
 
         except:
             response = make_response_with_cors(
@@ -332,6 +334,7 @@ def make_predictions(request):
                     scores.append(False)
             except:
                 scores.append(None)
+                print(json.dumps(predictors, indent=4))
 
         response = make_response_with_cors(json.dumps(scores), status=200)
         return response

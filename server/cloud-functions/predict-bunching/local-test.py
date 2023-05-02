@@ -9,9 +9,7 @@ import pandas as pd
 from flask import make_response
 import functions_framework
 import os
-from sklearn.preprocessing import StandardScaler
 
-scaler = StandardScaler()
 dotenv.load_dotenv()
 
 directionDict = {
@@ -280,7 +278,9 @@ def make_predictions(route, direction, trip_id):
     print(scores)
 
 
-make_predictions("33", "1", "208334")
+make_predictions("47", "0", "213557")
+
+
 
 
 
