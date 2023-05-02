@@ -17,20 +17,20 @@
 ### Steps
 
 - **Model selection**
-  - Select a model and associated variables based on Yihong's work
+  - Select a model based on Yihong's work
   - Tools: R
 
 - **Training data preparation**
   - Based on requirements of the selected model, prepare clean training dataset and save it as training-deploy.gzip in the repo
-  - Tools: Python
+  - Tools: Python/R
 
 - **Model training**
   - Train different models N stops ahead
   - Tools: Python
 
 - **Model serialization**
-  - Serialize the models and store it in Google Cloud Storage
-  - Tools: Python, Google Cloud Storage
+  - Serialize the models and store it in the repo
+  - Tools: Python
 
 ## Step 3: Caching Real-Time Data from Transit View API
 
@@ -85,28 +85,12 @@
 where each row represents a stop arrival instance. One row is added when detecting that a bus's next stop has changed.
 When making the prediction, get this table and use data from the last 3 hours, for example.
 
-## Step 4: Upload dictionaries to join with the real-time data
-
-### Steps: 
-
-- **Create and upload a dictionary that contains stop information**
-  - Each stop will be marked with a unique Id: "route"-"directionId"-"stopId"
-  - The stop-level variable includes a stop's daily average ridership in 2019, the population of the block which the stop is in, the number of signals ahead...etc. These are all preprocessed and ready to be used for predictions.
-  - Tools: Python, Google Cloud Storage
-
-- **Create and upload a dictionary containing the unique IDs of the next 11 to 21 stops for each stop**
-  - Format:          
-  {"21_0_21351": {"next_11_unique_id": "21_0_19077", "next_12_unique_id": "21_0_19078", "next_13_unique_id": "21_0_19079"..."next_21_unique_id": "21_0_30194"}
-  - This is to retrieve the next "X" stop information as we predict initiation of bunching at "X" number of stops ahead.
-  - Tools: Python, Google Cloud Storage
-
-
-## Step 5: Make Predictions on Request from Front-End
+## Step 4: Make Predictions on Request from Front-End
 
 ### Steps
 
 - **Data engineering**
-  - On user request, grab data from the cache, grab next X stops info from dictionaries, make joins and other engineering generate a prediction-ready json. 
+  - On user request, grab data from the cache, make joins and other engineering generate a prediction-ready json
   - Tools: Google Cloud Functions
 
 - **Prediction making**
@@ -117,14 +101,13 @@ When making the prediction, get this table and use data from the last 3 hours, f
 
 First, from the above table, extend to this form:
 
-| Route | Trip | Direction | Stop  | Timestamp  | Previously dispatched bus trip ID | Headway | Speed | Lateness | Lag variables | Stop level variables |
-|-------|------|-----------|-------|------------|-----------------------------------|---------|-------|----------|--------------|------------|
-| 21    | 343  | WestBound | 21363 | 1681939647 | 322                               | 10      | 10    | 0        | 10           | 10         | 0             |
-| 21    | 322  | WestBound | 21363 | 1681939647 | 343                               | 10      | 10    | 0        | 10           | 10         | 
+| Route | Trip | Direction | Stop  | Timestamp  | Previous bus trip ID | Headway | Speed | Lateness | Prev_Headway | Prev_Speed | Prev_Lateness |
+|-------|------|-----------|-------|------------|----------------------|---------|-------|----------|--------------|------------|---------------|
+| 21    | 343  | WestBound | 21363 | 1681939647 | 322                  | 10      | 10    | 0        | 10           | 10         | 0             |
+| 21    | 322  | WestBound | 21363 | 1681939647 | 343                  | 10      | 10    | 0        | 10           | 10         | 0             |
 
-Then, find out what is the stop 11-20 stops away.
-Next, join stop-specific data on the 11-to-20-stops-away stop
-Calculate other lag vriables
+Then, find out what is the stop 20 stops away.
+Next, join stop-specific data on the 20-stops-away stop
 
 Finally, predict.
 
