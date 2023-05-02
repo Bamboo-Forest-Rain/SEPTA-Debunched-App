@@ -111,6 +111,10 @@ When making the prediction, get this table and use data from the last 3 hours, f
 
 - **Prediction making**
   - Use the serialized data to produce a json containing production results
+  - Return results in an array of "TRUE" and "FALSE"
+  - For example:
+    [FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE]
+  
   - Tools: Google Cloud Functions
 
 ### How to engineer data
@@ -125,6 +129,7 @@ First, from the above table, extend to this form:
 Then, find out what is the stop 11-20 stops away.
 Next, join stop-specific data on the 11-to-20-stops-away stop
 Calculate other lag vriables
+Call the associated model from the storage bucket
 
 Finally, predict.
 
