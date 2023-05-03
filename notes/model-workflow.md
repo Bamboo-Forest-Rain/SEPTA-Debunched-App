@@ -142,10 +142,14 @@ When making the prediction, get this table and use data from the last 3 hours, f
  - Finally, predict.
 
 
-| Route | Trip | Direction | Stop  | Timestamp  | Previously dispatched bus trip ID | Headway | Speed | Lateness | Future Xth Stop ID  | Stop level variables |
-|-------|------|-----------|-------|------------|-----------------------------------|---------|-------|----------|---------------|------------|
-| 21    | 343  | WestBound | 21363 | 1681939647 | 322                               | 10      | 10    | 0        | 21567           | 10         | 0             |
-| 21    | 322  | WestBound | 21363 | 1681939647 | 343                               | 10      | 10    | 0        | 21567           | 10         | 
+
+| Route | Trip | Direction | Stop  | Timestamp  | Previous bus trip ID | Headway | Speed | Lateness | Prev_Headway | Prev_Speed | Prev_Lateness |
+|-------|------|-----------|-------|------------|----------------------|---------|-------|----------|--------------|------------|---------------|
+| 21    | 343  | WestBound | 21363 | 1681939647 | 322                  | 10      | 10    | 0        | 10           | 10         | 0             |
+| 21    | 322  | WestBound | 21363 | 1681939647 | 343                  | 10      | 10    | 0        | 10           | 10         | 0             |
 
 
-
+|Future Xth Stop ID  | Stop level variables |
+|--------------------|----------------------|
+|21567               | 10                   | 
+|21567               | 10                   | 
