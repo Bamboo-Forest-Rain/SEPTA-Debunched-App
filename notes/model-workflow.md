@@ -100,18 +100,29 @@ When making the prediction, get this table and use data from the last 3 hours, f
   - This is to retrieve the next "X" stop information as we predict initiation of bunching at "X" number of stops ahead.
   - Tools: Python, Google Cloud Storage
 
+- **Create and upload a dictionary containing trip schedules**
+  - Format:          
+  {"60622": {"expectedHeadway": 1098.8, "start_time": "20:29:00"} 
+  - SEPTA buses are dispatched based on their schedule everyday. Each bus trip has a unique trip ID. 
+  - Tools: Python, Google Cloud Storage
 
 ## Step 5: Make Predictions on Request from Front-End
 
 ### Steps
 
 - **Data engineering**
-  - On user request, grab data from the cache, grab next X stops info from dictionaries, make joins and other engineering generate a prediction-ready json. 
+  - On user request:
+    - Grab data from the cache
+    - Grab next X stops info from dictionaries based on the current bus arrivals
+    - Grab trip schedules
+    - Make joins and calculate headways, speeds, lateness, as well as associated lag variables
+    - Preprocess the data so it's ready to be predicted on
+
   - Tools: Google Cloud Functions
 
 - **Prediction making**
   - Use the serialized data to produce a json containing production results
-  - Return results in an array of "TRUE" and "FALSE"
+  - Return results in an array of "TRUE" and "FALSE" based on probability and a set threshold.
   - For example:
     [FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE]
   
@@ -119,17 +130,22 @@ When making the prediction, get this table and use data from the last 3 hours, f
 
 ### How to engineer data
 
-First, from the above table, extend to this form:
+ - First, from the above table, calculate the headway, speed, latnesses.
 
-| Route | Trip | Direction | Stop  | Timestamp  | Previously dispatched bus trip ID | Headway | Speed | Lateness | Lag variables | Stop level variables |
-|-------|------|-----------|-------|------------|-----------------------------------|---------|-------|----------|--------------|------------|
-| 21    | 343  | WestBound | 21363 | 1681939647 | 322                               | 10      | 10    | 0        | 10           | 10         | 0             |
-| 21    | 322  | WestBound | 21363 | 1681939647 | 343                               | 10      | 10    | 0        | 10           | 10         | 
+ - Then, find out what is the stop 11-20 stops away.
 
-Then, find out what is the stop 11-20 stops away.
-Next, join stop-specific data on the 11-to-20-stops-away stop
-Calculate other lag vriables
-Call the associated model from the storage bucket
+ - Next, join stop-specific data on the 11-to-20-stops-away stops.
 
-Finally, predict.
+
+ - Call the associated model from the storage bucket.
+
+ - Finally, predict.
+
+
+| Route | Trip | Direction | Stop  | Timestamp  | Previously dispatched bus trip ID | Headway | Speed | Lateness | Future Xth Stop ID  | Stop level variables |
+|-------|------|-----------|-------|------------|-----------------------------------|---------|-------|----------|---------------|------------|
+| 21    | 343  | WestBound | 21363 | 1681939647 | 322                               | 10      | 10    | 0        | 21567           | 10         | 0             |
+| 21    | 322  | WestBound | 21363 | 1681939647 | 343                               | 10      | 10    | 0        | 21567           | 10         | 
+
+
 
